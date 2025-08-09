@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tech Recruiter 2.0</title>
+
+    <!-- Libs Externas (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
+
+    <!-- Nosso CSS - Onde todos os estilos serão centralizados -->
+    <!-- Este arquivo deve ser criado em: /public/css/style.css -->
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body class="bg-light">
+
+    <!-- Estrutura Principal da Aplicação -->
+    <div class="d-flex">
+        <!-- Barra Lateral de Navegação (Sidebar) -->
+        <div class="sidebar d-flex flex-column flex-shrink-0 p-3 text-white bg-dark">
+            <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none">
+                <i class="bi bi-robot me-2" style="font-size: 2rem;"></i>
+                <span class="fs-4">Tech Recruiter</span>
+            </a>
+            <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#dashboard" class="nav-link active" data-bs-toggle="tab">
+                        <i class="bi bi-speedometer2 me-2"></i> Dashboard
+                    </a>
+                </li>
+                <li>
+                    <a href="#vagas" class="nav-link text-white" data-bs-toggle="tab">
+                        <i class="bi bi-briefcase me-2"></i> Vagas
+                    </a>
+                </li>
+                <li>
+                    <a href="#candidatos" class="nav-link text-white" data-bs-toggle="tab">
+                        <i class="bi bi-people me-2"></i> Candidatos
+                    </a>
+                </li>
+            </ul>
+            <hr>
+            <div class="dropdown">
+                <a href="#" class="d-flex align-items-center text-white text-decoration-none dropdown-toggle" id="dropdownUser" data-bs-toggle="dropdown" aria-expanded="false">
+                    <img src="https://placehold.co/32x32/2c3e50/ecf0f1?text=R" alt="" width="32" height="32" class="rounded-circle me-2">
+                    <strong>Recrutador</strong>
+                </a>
+                <ul class="dropdown-menu dropdown-menu-dark text-small shadow" aria-labelledby="dropdownUser">
+                    <li><a class="dropdown-item" href="#">Configurações</a></li>
+                    <li><a class="dropdown-item" href="#">Perfil</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="#">Sair</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Conteúdo Principal -->
+        <main class="content p-4 w-100">
+            <div class="container-fluid">
+                <div class="tab-content">
+                    <!-- Aba Dashboard -->
+                    <div class="tab-pane fade show active" id="dashboard">
+                        <h1 class="h3 mb-3">Dashboard</h1>
+                        <!-- O conteúdo do dashboard será renderizado aqui via JS -->
+                        <div id="dashboard-content" class="row">
+                            <!-- Ex: Cards de estatísticas, gráficos, etc. -->
+                        </div>
+                    </div>
+
+                    <!-- Aba Vagas -->
+                    <div class="tab-pane fade" id="vagas">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                           <h1 class="h3">Vagas Abertas</h1>
+                           <!-- O botão de upload de CV virá para cá -->
+                           <label for="cvUpload" class="btn btn-primary">
+                                <i class="bi bi-cloud-upload me-2"></i> Analisar Novo Currículo
+                           </label>
+                           <input type="file" id="cvUpload" accept=".pdf,.doc,.docx" class="d-none">
+                        </div>
+                        <div id="vagas-content" class="row">
+                            <!-- A lista de vagas será renderizada aqui via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Aba Candidatos -->
+                    <div class="tab-pane fade" id="candidatos">
+                        <h1 class="h3 mb-3">Candidatos</h1>
+                        <div id="candidatos-content" class="row">
+                            <!-- A lista de candidatos será renderizada aqui via JS -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <!-- SCRIPTS -->
+
+    <!-- Libs Externas (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Firebase SDK - A base da nossa conexão com o backend -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-firestore-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage-compat.js"></script>
+
+    <!-- Nossos Scripts -->
+    <!-- A ordem de importação é importante! -->
+
+    <!-- 1. Configuração do Firebase -->
+    <!-- Arquivo: /public/js/services/firebase.js -->
+    <script src="js/services/firebase.js"></script>
+
+    <!-- 2. Serviços (Lógica de negócio desacoplada) -->
+    <!-- Arquivo: /public/js/services/auth.js -->
+    <script src="js/services/auth.js"></script>
+    <!-- Arquivo: /public/js/services/firestoreService.js -->
+    <script src="js/services/firestoreService.js"></script>
+    <!-- Arquivo: /public/js/services/storageService.js -->
+    <script src="js/services/storageService.js"></script>
+
+    <!-- 3. Componentes de UI (Renderização) -->
+    <!-- Arquivo: /public/js/components/Dashboard.js -->
+    <script src="js/components/Dashboard.js"></script>
+    <!-- Arquivo: /public/js/components/CandidateList.js -->
+    <script src="js/components/CandidateList.js"></script>
+
+    <!-- 4. Ponto de Entrada Principal da Aplicação -->
+    <!-- Arquivo: /public/js/main.js -->
+    <script src="js/main.js"></script>
+
+</body>
+</html>
