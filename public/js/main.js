@@ -21,19 +21,25 @@ const App = {
     },
 
     loadDashboard: async () => {
-        console.log("Carregando componentes do dashboard...");
+        console.log("Carregando dados iniciais...");
 
         await FirestoreService.seedInitialJobs();
         
+        // Busca os dados iniciais de vagas e candidatos
         const jobs = await FirestoreService.getJobs();
-        JobList.render(jobs);
+        const initialCandidates = await FirestoreService.getCandidates();
 
-        // Inicia o listener para candidatos.
-        // A função de callback agora renderiza tanto a lista de candidatos
-        // quanto o dashboard, para que as estatísticas sejam sempre atuais.
-        FirestoreService.listenForCandidates((candidates) => {
-            CandidateList.render(candidates);
-            Dashboard.render(jobs, candidates); // Renderiza o dashboard com os dados mais recentes
+        // Renderiza todos os componentes com os dados iniciais
+        JobList.render(jobs);
+        CandidateList.render(initialCandidates);
+        Dashboard.render(jobs, initialCandidates);
+
+        // Agora, configura o listener para atualizações em tempo real dos candidatos
+        FirestoreService.listenForCandidates((updatedCandidates) => {
+            console.log("Lista de candidatos atualizada em tempo real.");
+            // Re-renderiza apenas os componentes que dependem dos candidatos
+            CandidateList.render(updatedCandidates);
+            Dashboard.render(jobs, updatedCandidates);
         });
     },
 

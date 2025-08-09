@@ -2,6 +2,9 @@
 // Responsabilidade: Renderizar os elementos visuais do dashboard principal.
 
 const Dashboard = {
+    // Armazena a instância do gráfico para que possamos destruí-la antes de redesenhar.
+    chartInstance: null,
+
     /**
      * Renderiza todo o conteúdo do dashboard.
      * @param {Array} jobs - A lista de vagas.
@@ -14,24 +17,37 @@ const Dashboard = {
             return;
         }
 
-        container.innerHTML = ''; // Limpa o conteúdo
+        // Limpa o conteúdo anterior de forma segura.
+        container.innerHTML = '';
 
-        // 1. Renderiza os cartões de estatísticas
-        Dashboard.renderStatCards(container, jobs, candidates);
+        // Tenta renderizar os componentes visuais.
+        try {
+            // 1. Renderiza os cartões de estatísticas
+            const statsHTML = Dashboard.getStatCardsHTML(jobs, candidates);
+            container.innerHTML = statsHTML; // Adiciona primeiro os cards
 
-        // 2. Renderiza os gráficos
-        Dashboard.renderCharts(container, jobs, candidates);
+            // 2. Renderiza os gráficos
+            const chartsHTML = Dashboard.getChartsHTML();
+            container.insertAdjacentHTML('beforeend', chartsHTML); // Adiciona o container do gráfico
+
+            // 3. Desenha o gráfico no canvas recém-criado
+            Dashboard.drawSkillsChart(jobs);
+
+        } catch (error) {
+            console.error("Ocorreu um erro ao renderizar o dashboard:", error);
+            container.innerHTML = '<div class="alert alert-danger">Não foi possível carregar o dashboard. Verifique o console para mais detalhes.</div>';
+        }
     },
 
     /**
-     * Cria e insere os cartões de estatísticas no container.
+     * Retorna o HTML dos cartões de estatísticas.
      */
-    renderStatCards: (container, jobs, candidates) => {
+    getStatCardsHTML: (jobs, candidates) => {
         const totalJobs = jobs.length;
         const activeJobs = jobs.filter(job => job.status === 'Ativa').length;
         const totalCandidates = candidates.length;
 
-        const statsHTML = `
+        return `
             <div class="col-md-4 mb-4">
                 <div class="stat-card">
                     <div class="stat-icon"><i class="bi bi-briefcase-fill"></i></div>
@@ -54,14 +70,13 @@ const Dashboard = {
                 </div>
             </div>
         `;
-        container.innerHTML += statsHTML;
     },
 
     /**
-     * Cria e insere os gráficos no container.
+     * Retorna o HTML do container dos gráficos.
      */
-    renderCharts: (container, jobs, candidates) => {
-        const chartContainerHTML = `
+    getChartsHTML: () => {
+        return `
             <div class="col-md-12">
                 <div class="card">
                     <div class="card-header">
@@ -73,9 +88,23 @@ const Dashboard = {
                 </div>
             </div>
         `;
-        container.innerHTML += chartContainerHTML;
+    },
 
-        // Lógica para agregar e contar as habilidades
+    /**
+     * Desenha o gráfico de habilidades no canvas.
+     */
+    drawSkillsChart: (jobs) => {
+        const canvas = document.getElementById('skillsChart');
+        if (!canvas) {
+            console.error("Elemento canvas 'skillsChart' não foi encontrado para desenhar o gráfico.");
+            return;
+        }
+
+        // Destrói o gráfico anterior se ele existir. Isso previne bugs de renderização.
+        if (Dashboard.chartInstance) {
+            Dashboard.chartInstance.destroy();
+        }
+
         const skillCounts = {};
         jobs.forEach(job => {
             if (job.requiredSkills) {
@@ -89,9 +118,8 @@ const Dashboard = {
         const labels = sortedSkills.map(item => item[0]);
         const data = sortedSkills.map(item => item[1]);
 
-        // Renderiza o gráfico usando Chart.js
-        const ctx = document.getElementById('skillsChart').getContext('2d');
-        new Chart(ctx, {
+        const ctx = canvas.getContext('2d');
+        Dashboard.chartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
                 labels: labels,
@@ -108,7 +136,7 @@ const Dashboard = {
                     y: {
                         beginAtZero: true,
                         ticks: {
-                            stepSize: 1 // Garante que o eixo Y seja de números inteiros
+                            stepSize: 1
                         }
                     }
                 },
