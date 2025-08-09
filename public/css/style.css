@@ -1,0 +1,60 @@
+/* Arquivo: /public/css/style.css */
+
+body {
+    overflow-x: hidden;
+}
+
+.sidebar {
+    width: 280px;
+    height: 100vh;
+    position: fixed;
+}
+
+.content {
+    margin-left: 280px;
+}
+
+.job-card {
+    border-left: 4px solid var(--bs-primary);
+    transition: all 0.2s ease-in-out;
+}
+
+.job-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.job-card .badge {
+    font-size: 0.9rem;
+}
+
+/* NOVOS ESTILOS PARA O DASHBOARD */
+.stat-card {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    text-align: center;
+    background-color: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+.stat-card:hover {
+    border-color: var(--bs-primary);
+}
+
+.stat-card .stat-icon {
+    font-size: 2.5rem;
+    color: var(--bs-primary);
+    margin-bottom: 0.5rem;
+}
+
+.stat-card .stat-number {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #333;
+}
+
+.stat-card .stat-label {
+    font-size: 1rem;
+    color: #6c757d;
+}

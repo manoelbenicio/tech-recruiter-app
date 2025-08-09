@@ -1,42 +1,33 @@
-// Arquivo: /public/js/main.js
-// Responsabilidade: Orquestrar a inicialização e o estado geral da aplicação.
+// Arquivo: /public/js/services/firebase.js
+// Responsabilidade: Inicializar e configurar a conexão com o Firebase.
 
-// O objeto 'App' conterá o estado e as funções principais da nossa aplicação.
-const App = {
-    user: null, // Armazenará informações do usuário logado
-
-    // A função init é o ponto de partida.
-    init: () => {
-        console.log("Aplicação Tech Recruiter iniciando...");
-        
-        // Tenta fazer login anônimo para testar a conexão com o Auth do Firebase.
-        // Isso nos dá uma sessão de usuário válida sem pedir login/senha ainda.
-        firebaseServices.auth.signInAnonymously()
-            .then((userCredential) => {
-                // Sucesso! Temos um usuário anônimo.
-                App.user = userCredential.user;
-                console.log("Login anônimo bem-sucedido! UID:", App.user.uid);
-                
-                // Agora que estamos autenticados, podemos carregar os dados.
-                App.loadDashboard();
-            })
-            .catch((error) => {
-                // Se isso falhar, provavelmente há um problema com as regras de segurança
-                // ou a configuração do Firebase Authentication.
-                console.error("Erro no login anônimo:", error);
-                alert("Falha ao autenticar com o serviço. Verifique o console.");
-            });
-    },
-
-    // Função para carregar os componentes do dashboard.
-    loadDashboard: () => {
-        console.log("Carregando componentes do dashboard...");
-        // Aqui, no futuro, chamaremos as funções para renderizar os gráficos e listas.
-        // Ex: Dashboard.render();
-        // Ex: CandidateList.render();
-    }
+const firebaseServices = {
+    app: null,
+    auth: null,
+    db: null,
+    storage: null,
 };
 
-// Adiciona um 'escutador de eventos' que espera o HTML da página ser completamente
-// carregado antes de executar nosso código, para evitar erros.
-document.addEventListener('DOMContentLoaded', App.init);
+try {
+    // --- SUA CONFIGURAÇÃO DO FIREBASE DEVE ESTAR AQUI ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyCZ_Ppxy4cB95Tkcu4g7Sg50CvSH_sPppA",
+      authDomain: "tech-recruiter-prod.firebaseapp.com",
+      projectId: "tech-recruiter-prod",
+      storageBucket: "tech-recruiter-prod.appspot.com",
+      messagingSenderId: "367691886884",
+      appId: "1:367691886884:web:f640720af233e950c743b1"
+    };
+    // -------------------------------------------------
+
+    firebaseServices.app = firebase.initializeApp(firebaseConfig);
+    firebaseServices.auth = firebase.auth();
+    firebaseServices.db = firebase.firestore();
+    firebaseServices.storage = firebase.storage();
+
+    console.log("Firebase SDKs inicializados com sucesso!");
+
+} catch (error) {
+    console.error("Erro ao inicializar o Firebase:", error);
+    alert("Não foi possível conectar ao backend. Verifique o console para mais detalhes.");
+}

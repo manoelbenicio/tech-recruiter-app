@@ -8,17 +8,13 @@ const FirestoreService = {
      */
     getJobs: async () => {
         try {
-            // Acessa a coleção 'jobs' no nosso banco de dados (db).
             const snapshot = await firebaseServices.db.collection('jobs').get();
 
-            // Verifica se a coleção está vazia.
             if (snapshot.empty) {
-                console.warn("Nenhuma vaga encontrada no Firestore. Adicione dados de teste no console do Firebase.");
+                console.warn("Coleção 'jobs' está vazia.");
                 return [];
             }
 
-            // Mapeia os documentos retornados para um array de objetos,
-            // incluindo o ID único de cada documento.
             const jobs = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
@@ -28,13 +24,43 @@ const FirestoreService = {
 
         } catch (error) {
             console.error("Erro ao buscar vagas:", error);
-            // Retorna um array vazio em caso de erro para não quebrar a UI.
             return [];
         }
     },
 
-    // No futuro, teremos mais funções aqui para interagir com o banco de dados:
-    // getCandidates: async () => { ... },
-    // addJob: async (jobData) => { ... },
-    // updateCandidate: async (candidateId, data) => { ... },
+    /**
+     * Adiciona dados de teste iniciais ao Firestore se a coleção estiver vazia.
+     * Esta função previne a necessidade de adicionar dados manualmente no futuro.
+     */
+    seedInitialJobs: async () => {
+        try {
+            const jobsCollection = firebaseServices.db.collection('jobs');
+            const snapshot = await jobsCollection.get();
+
+            if (snapshot.empty) {
+                console.log("Nenhuma vaga encontrada. Adicionando dados de teste iniciais...");
+
+                // Usamos um batch para garantir que todas as operações sejam atômicas.
+                const batch = firebaseServices.db.batch();
+
+                const jobsData = [
+                    { title: "Desenvolvedor Java Pleno", status: "Ativa", minExperience: 3, requiredSkills: ["Java", "Spring Boot", "SQL"] },
+                    { title: "Engenheiro de DevOps Sênior", status: "Ativa", minExperience: 5, requiredSkills: ["AWS", "Kubernetes", "Terraform", "CI/CD"] },
+                    { title: "Desenvolvedor Frontend React", status: "Pausada", minExperience: 2, requiredSkills: ["React", "TypeScript", "CSS-in-JS"] }
+                ];
+
+                jobsData.forEach(job => {
+                    const newJobRef = jobsCollection.doc(); // Cria uma referência com ID automático
+                    batch.set(newJobRef, job);
+                });
+
+                await batch.commit();
+                console.log("Dados de teste adicionados com sucesso!");
+            } else {
+                console.log("A coleção 'jobs' já contém dados. Seeding não é necessário.");
+            }
+        } catch (error) {
+            console.error("Erro ao adicionar dados de teste (seed):", error);
+        }
+    }
 };
